@@ -27,7 +27,7 @@ public class ProfileFragment extends Fragment {
 
     private View parentView;
     private ResideMenu resideMenu;
-    private final String URL = "http://192.168.1.7:8080/example-server/student/login";
+    private final String URL = "http://192.168.1.8:8080/example-server/student/login";
 
     private EditText usernameEditText;
     private EditText passwordEditText;
@@ -43,7 +43,6 @@ public class ProfileFragment extends Fragment {
     private void setUpViews() {
         final MenuActivity parentActivity = (MenuActivity) getActivity();
         resideMenu = parentActivity.getResideMenu();
-
         usernameEditText = (EditText) parentView
                 .findViewById(R.id.login_username_edittext);
         passwordEditText = (EditText) parentView
@@ -52,8 +51,8 @@ public class ProfileFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        login(usernameEditText.getText().toString(),
-                                passwordEditText.getText().toString());
+                        login(usernameEditText.getText().toString().trim(),
+                                passwordEditText.getText().toString().trim());
                         // resideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
                     }
                 });
@@ -85,11 +84,11 @@ public class ProfileFragment extends Fragment {
                         @SuppressWarnings("unchecked")
                         Map<String, String> test = json.fromJson(
                                 responseInfo.result, HashMap.class);
-//                        if(test.get("status").toString() == "1"){
-//                            
-//                        } else{
-//                            
-//                        }
+                        // if(test.get("status").toString() == "1"){
+                        //
+                        // } else{
+                        //
+                        // }
                         Toast.makeText(getActivity(), test.get("msg"),
                                 Toast.LENGTH_SHORT).show();
                     }
@@ -101,7 +100,8 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onFailure(HttpException error, String msg) {
-                        System.out.println();
+                        Toast.makeText(getActivity(), "联网失败，请检查您的网络!", 1)
+                                .show();
                     }
                 });
     }

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">ResideMenuDemo</string>
-    
-        <!-- 所有错误提示，都是以e_开头_hint结尾 -->
+
+    <!-- 所有错误提示，都是以e_开头_hint结尾 -->
     <string name="e_username_hint">请输入正确的用户名</string>
     <string name="e_password_hint">请输入正确的密码</string>
 
@@ -11,7 +12,7 @@
     <string name="max_length_password">12</string>
 
     <!-- 常规 -->
-    <string name="edit_text_type">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="edit_text_type">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,</string>
     <string name="submit">Submit</string>
 
     <!-- LoginActivity -->
@@ -20,5 +21,19 @@
     <string name="login_password_hint">Enter Password</string>
     <string name="login_username_length_hint">Username length between 8 to 12</string>
     <string name="login_password_length_hint">Password length between 8 to 12</string>
-    
+
+    <!-- jpush.xml -->
+    <string name="jpush_tag"></string>
+    <string name="hello">Hello World, JPush!</string>
+    <string name="tag_hint">Tag为大小写字母，数字</string>
+    <string name="alias_hint">Alias为大小写字母，数字，下划线</string>
+    <string name="style_hint">style为数字</string>
+    <string name="error_style_empty">style不能为空</string>
+    <string name="error_alias_empty">alias不能为空</string>
+    <string name="error_tag_empty">tag不能为空</string>
+    <string name="error_tag_gs_empty">格式不对</string>
+    <string name="error_network">网络连接异常,初始化失败 请检查网络！</string>
+    <string name="logining">程序在后台执行, 请查看日志！</string>
+    <string name="setting_su">设置成功</string>
+
 </resources>
