@@ -2,8 +2,9 @@
 <resources>
 
     <string name="app_name">ResideMenuDemo</string>
-
-    <!-- 所有错误提示，都是以e_开头_hint结尾 -->
+    <string name="URL_LOGIN">http://192.168.1.7:8080/example-server/student/login</string>
+     <string name="URL_DOWNLOAD">http://192.168.1.7:8080/example-server/testpage/downloadpage</string>
+   <!-- 所有错误提示，都是以e_开头_hint结尾 -->
     <string name="e_username_hint">请输入正确的用户名</string>
     <string name="e_password_hint">请输入正确的密码</string>
 

@@ -2,6 +2,7 @@ package cn.cuit.wlgc.example;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import cn.cuit.wlgc.example.R;
+
 import com.google.gson.Gson;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -27,7 +29,8 @@ public class ProfileFragment extends Fragment {
 
     private View parentView;
     private ResideMenu resideMenu;
-    private final String URL = "http://192.168.1.8:8080/example-server/student/login";
+//    private final String URL = getString(R.string.URL_LOGIN);
+    private final String URL = "http://192.168.1.7:8080/example-server/student/login";
 
     private EditText usernameEditText;
     private EditText passwordEditText;

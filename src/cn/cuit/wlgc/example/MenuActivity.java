@@ -1,5 +1,14 @@
 package cn.cuit.wlgc.example;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -7,12 +16,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
-import cn.cuit.wlgc.example.R;
+import cn.cuit.wlgc.example.plugin.ui.GroupFragment;
 import cn.jpush.android.api.JPushInterface;
 
+import com.google.gson.Gson;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
+@SuppressLint({ "NewApi", "CommitPrefEdits" })
 public class MenuActivity extends FragmentActivity implements
         View.OnClickListener {
 
@@ -21,6 +32,7 @@ public class MenuActivity extends FragmentActivity implements
     private ResideMenuItem itemHome;
     private ResideMenuItem itemProfile;
     private ResideMenuItem itemCalendar;
+    private ResideMenuItem itemTestPagedar;
     private ResideMenuItem itemSettings;
 
     /**
@@ -33,10 +45,43 @@ public class MenuActivity extends FragmentActivity implements
         setContentView(R.layout.main);
         mContext = this;
         setUpMenu();
-        if (savedInstanceState == null)
-            changeFragment(new HomeFragment());
         JPushInterface.setDebugMode(true); // 设置开启日志,发布时请关闭日志
         JPushInterface.init(this); // 初始化 JPush
+        if (getIntent().getExtras() == null)
+            changeFragment(new HomeFragment());
+        else if ("随堂测评".equals(getIntent().getExtras().getString(
+                "cn.jpush.android.NOTIFICATION_CONTENT_TITLE"))) {
+            changeFragment(new CalendarFragment());
+        } else if ("课后作业".equals(getIntent().getExtras().getString(
+                "cn.jpush.android.NOTIFICATION_CONTENT_TITLE"))) {
+
+            // 推送过来的消息存到手机存储上
+            String msg = getIntent().getExtras().getString(
+                    "cn.jpush.android.ALERT");
+            @SuppressWarnings("unchecked")
+            Map<String, String> pageMsg = new Gson().fromJson(msg,
+                    HashMap.class);
+            String pageId = pageMsg.get("pageId");
+            SharedPreferences sp = this.getSharedPreferences("pageInfo",
+                    Context.MODE_PRIVATE);
+            Set<String> pageInfo = sp.getStringSet(pageId.substring(0, 10),
+                    new HashSet<String>());
+            pageInfo.add(pageId);
+            Editor editor = sp.edit();
+            if (pageInfo.size() != 0) {
+                editor.remove(pageId.substring(0, 10));
+                editor.commit();
+            }
+            editor.putStringSet(pageId.substring(0, 10), pageInfo);
+            try {
+                editor.commit();
+            } catch (Exception ex) {
+                Toast.makeText(this, "result:" + ex.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            changeFragment(new GroupFragment());
+        }
     }
 
     private void setUpMenu() {
@@ -58,11 +103,14 @@ public class MenuActivity extends FragmentActivity implements
                 "Calendar");
         itemSettings = new ResideMenuItem(this, R.drawable.icon_settings,
                 "Settings");
+        itemTestPagedar = new ResideMenuItem(this, R.drawable.icon_settings,
+                "TestPage");
 
         itemHome.setOnClickListener(this);
         itemProfile.setOnClickListener(this);
         itemCalendar.setOnClickListener(this);
         itemSettings.setOnClickListener(this);
+        itemTestPagedar.setOnClickListener(this);
 
         // resideMenu.addMenuItem(itemHome, ResideMenu.DIRECTION_LEFT);
         // resideMenu.addMenuItem(itemProfile, ResideMenu.DIRECTION_LEFT);
@@ -73,6 +121,7 @@ public class MenuActivity extends FragmentActivity implements
         resideMenu.addMenuItem(itemProfile, ResideMenu.DIRECTION_LEFT);
         resideMenu.addMenuItem(itemCalendar, ResideMenu.DIRECTION_LEFT);
         resideMenu.addMenuItem(itemSettings, ResideMenu.DIRECTION_LEFT);
+        resideMenu.addMenuItem(itemTestPagedar, ResideMenu.DIRECTION_LEFT);
 
         // You can disable a direction by setting ->
         // resideMenu.setSwipeDirectionDisable(ResideMenu.DIRECTION_RIGHT);
@@ -110,6 +159,8 @@ public class MenuActivity extends FragmentActivity implements
             changeFragment(new CalendarFragment());
         } else if (view == itemSettings) {
             changeFragment(new SettingsFragment());
+        } else if (view == itemTestPagedar) {
+            changeFragment(new GroupFragment());
         }
 
         resideMenu.closeMenu();

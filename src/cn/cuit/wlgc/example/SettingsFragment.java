@@ -30,7 +30,7 @@ import com.special.ResideMenu.ResideMenu;
  * User: special Date: 13-12-22 Time: 下午3:28 Mail: specialcyci@gmail.com
  */
 public class SettingsFragment extends Fragment {
-    private static final String TAG = "Setting Jpush Tag";
+    private static final String TAG = "Jpush";
     private static final int MSG_SET_ALIAS = 1001;
     private static final int MSG_SET_TAGS = 1002;
 
@@ -55,7 +55,6 @@ public class SettingsFragment extends Fragment {
                     @Override
                     public void onClick(View view) { // 检查 tag 的有效性
                         setTag(tagsText.getText().toString().trim());
-
                     }
                 });
         TextView textView = (TextView) parentView.findViewById(R.id.textView1);
@@ -74,7 +73,6 @@ public class SettingsFragment extends Fragment {
         FrameLayout ignored_view = (FrameLayout) parentView
                 .findViewById(R.id.ignored_view);
         resideMenu.addIgnoredView(ignored_view);
-
     }
 
     private void setTag(String tag) {
