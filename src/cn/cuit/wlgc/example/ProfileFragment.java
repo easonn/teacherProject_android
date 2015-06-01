@@ -23,7 +23,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.special.ResideMenu.ResideMenu;
 
 /**
- * User: special Date: 13-12-22 Time: 下午1:31 Mail: specialcyci@gmail.com
+ * login
  */
 public class ProfileFragment extends Fragment {
 

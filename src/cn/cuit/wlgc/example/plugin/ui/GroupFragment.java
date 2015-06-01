@@ -10,7 +10,9 @@ import java.util.Set;
 
 import org.apache.http.util.EncodingUtils;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,7 +28,9 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import cn.cuit.wlgc.example.MenuActivity;
 import cn.cuit.wlgc.example.R;
+import cn.cuit.wlgc.example.TestPageActivity;
 import cn.cuit.wlgc.example.plugin.ui.PinnedHeaderExpandableListView.OnHeaderUpdateListener;
 import cn.cuit.wlgc.example.plugin.ui.StickyLayout.OnGiveUpTouchEventListener;
 
@@ -217,10 +221,16 @@ public class GroupFragment extends Fragment implements
                             String info = EncodingUtils.getString(buffer,
                                     "UTF-8");
                             fin.close();
-                            Toast.makeText(parentView.getContext(),
-                                    "clicked pos=" + info, Toast.LENGTH_SHORT)
-                                    .show();
-                            return;
+//                            Toast.makeText(parentView.getContext(),
+//                                    "clicked pos=" + info, Toast.LENGTH_SHORT)
+//                                    .show();
+                            //打开自定义的Activity
+                          Intent i = new Intent(parentView.getContext(), TestPageActivity.class);
+                          i.putExtra("info", info);
+                          i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                          parentView.getContext().startActivity(i);
+                          return;
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();

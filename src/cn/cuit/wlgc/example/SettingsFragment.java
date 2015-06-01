@@ -27,7 +27,7 @@ import cn.jpush.android.api.TagAliasCallback;
 import com.special.ResideMenu.ResideMenu;
 
 /**
- * User: special Date: 13-12-22 Time: 下午3:28 Mail: specialcyci@gmail.com
+ * set tag
  */
 public class SettingsFragment extends Fragment {
     private static final String TAG = "Jpush";
