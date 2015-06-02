@@ -8,8 +8,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -23,6 +34,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class TestPageActivity extends Activity implements OnClickListener {
+
+    // private final String URL = getString(R.string.URL_UPLOAD);
+    private final String URL = "http://192.168.1.2:8080/example-server/score/shangchuan";
+
     @SuppressWarnings("serial")
     private ArrayList<String> option = new ArrayList<String>() {
         {
@@ -42,31 +57,46 @@ public class TestPageActivity extends Activity implements OnClickListener {
         // super.setContentView(layout);
         layout.setOrientation(LinearLayout.VERTICAL);
         String testJson = getIntent().getExtras().getString("info");
+        final String pageId = getIntent().getExtras().getString("pageId");
         try {
             JSONObject jsonObject = new JSONObject(testJson);
             final String msg = jsonObject.getString("msg");
-            JSONArray jsonArray = jsonObject.getJSONArray("testInfo");
-
+            final String testName = jsonObject.getString("testName");
+            final JSONArray jsonArray = jsonObject.getJSONArray("testInfo");
+            SharedPreferences sp = this.getSharedPreferences("stuInfo",
+                    Context.MODE_PRIVATE);
+            String pageIdCheck = sp.getString(pageId, "none");
             Button button = new Button(this);
-            button.setText("完成");
-            button.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    if (score.size() < Integer.parseInt(msg)) {
-                        Toast.makeText(TestPageActivity.this, "请做完选择",
-                                Toast.LENGTH_SHORT).show();
+            if ("none".equals(pageIdCheck)) {
+                button.setText("完成");
+                button.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        if (score.size() < Integer.parseInt(msg)) {
+                            Toast.makeText(TestPageActivity.this, "请做完选择",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        float number = 0;
+                        for (Map.Entry<Integer, Integer> entry : score
+                                .entrySet()) {
+                            if (entry.getValue() == 1) {
+                                number++;
+                            }
+                        }
+                        try {
+                            String teacherId = jsonArray.getJSONObject(0)
+                                    .getString("teacherId");
+                            float finalScore = (number * 100f) / score.size();
+                            // Toast.makeText(TestPageActivity.this,
+                            // "分数" + finalScore, Toast.LENGTH_SHORT).show();
+                            upload(finalScore, pageId, teacherId, testName);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         return;
                     }
-                    float number = 0;
-                    for (Map.Entry<Integer, Integer> entry : score.entrySet()) {
-                        if (entry.getValue() == 1) {
-                            number++;
-                        }
-                    }
-                    float finalScore = (number * 100f) / score.size();
-                    Toast.makeText(TestPageActivity.this, "分数" + finalScore,
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
+                });
+            }
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 TextView show = new TextView(this);
@@ -100,7 +130,9 @@ public class TestPageActivity extends Activity implements OnClickListener {
                 layout.addView(show);
                 layout.addView(radioGroup);
             }
-            layout.addView(button);
+            if ("none".equals(pageIdCheck)) {
+                layout.addView(button);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -126,5 +158,70 @@ public class TestPageActivity extends Activity implements OnClickListener {
             score.put(i, 0);
             break;
         }
+    }
+
+    public void upload(final float score, final String pageId,
+            final String teacherId, final String testName) {
+        HttpUtils http = new HttpUtils();
+        RequestParams params = new RequestParams();
+        // 获取学生基本信息
+        SharedPreferences sp = this.getSharedPreferences("stuInfo",
+                Context.MODE_PRIVATE);
+        String stuId = sp.getString("stuId", "none");
+        if ("none".equals(stuId)) {
+            Toast.makeText(TestPageActivity.this, "请先登陆", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        params.addBodyParameter("stuId", stuId);
+        params.addBodyParameter("score", Float.toString(score));
+        params.addBodyParameter("pageId", pageId);
+        params.addBodyParameter("teacherId", teacherId);
+        params.addBodyParameter("testName", testName);
+        http.send(HttpRequest.HttpMethod.POST, URL, params,
+                new RequestCallBack<String>() {
+                    @Override
+                    public void onLoading(long total, long current,
+                            boolean isUploading) {
+                        System.out.println();
+                    }
+
+                    @Override
+                    public void onSuccess(ResponseInfo<String> responseInfo) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(
+                                    responseInfo.result);
+                            if (jsonObject.getBoolean("check")) {
+                                // 存入数据
+                                SharedPreferences sp = TestPageActivity.this
+                                        .getSharedPreferences("stuInfo",
+                                                Context.MODE_PRIVATE);
+                                Editor editor = sp.edit();
+                                editor.putString(pageId, Float.toString(score));
+                                editor.commit();
+                                Toast.makeText(TestPageActivity.this,
+                                        "提交成功，正确率：" + score + "%",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            } else {
+                                Toast.makeText(TestPageActivity.this,
+                                        "提交失败，请稍后再", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onStart() {
+                        System.out.println();
+                    }
+
+                    @Override
+                    public void onFailure(HttpException error, String msg) {
+                        Toast.makeText(TestPageActivity.this, "联网失败，请检查您的网络!",
+                                1).show();
+                    }
+                });
     }
 }

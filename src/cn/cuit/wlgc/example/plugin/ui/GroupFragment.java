@@ -227,6 +227,7 @@ public class GroupFragment extends Fragment implements
                             //打开自定义的Activity
                           Intent i = new Intent(parentView.getContext(), TestPageActivity.class);
                           i.putExtra("info", info);
+                          i.putExtra("pageId", pageId);
                           i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
                           parentView.getContext().startActivity(i);

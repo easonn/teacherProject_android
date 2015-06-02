@@ -44,7 +44,7 @@
                 android:hint="@string/login_username_hint"
                 android:maxLength="@string/max_length_username"
                 android:singleLine="true"
-                android:text="shangpuyun123"
+                android:text="20111210"
                 android:textColor="@color/text_color" />
         </LinearLayout>
 
@@ -87,7 +87,7 @@
                 android:inputType="textPassword"
                 android:maxLength="@string/max_length_password"
                 android:singleLine="true"
-                android:text="Pass1234"
+                android:text="test"
                 android:textColor="@color/text_color" />
         </LinearLayout>
 
@@ -131,7 +131,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="5dp"
-            android:text="This is an ignored view，you can’t use gesture to operate menu here."
+            android:text=""
             android:textColor="#9a9a9a"
             android:textSize="17sp" />
     </FrameLayout>
